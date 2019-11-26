@@ -13,25 +13,24 @@ object Day1 {
     val resultSum = lineListInt.sum
     val resultFrequencyTwice = frequencyTwice(lineListInt)
 
-    println(resultSum)
-    println("twice " + resultFrequencyTwice)
+    println("Part 1, result = " + resultSum)
+    println("Part 2, result =  " + resultFrequencyTwice)
   }
 
   def frequencyTwice(listInt : List[Int]): Int ={
 
-    def frequencyTwiceInner (theList: List[Int], sum: Int, countTwice: Int): Int ={
-      if (theList.isEmpty) return countTwice
+    def frequencyTwiceInner (theList: List[Int], listOfResult: List[Int], sum: Int): Int ={
+      if (theList.isEmpty) frequencyTwiceInner(listInt, listOfResult, sum)
       else {
         val actual = sum + theList.head
-        println(actual)
 
-        if (actual == 394) frequencyTwiceInner(theList.tail, actual, countTwice + 1)
-        else frequencyTwiceInner(theList.tail, actual, countTwice)
+        if (!listOfResult.contains(actual)) frequencyTwiceInner(theList.tail, (actual :: listOfResult), actual)
+        else actual
       }
     }
 
-    val nbTwice = frequencyTwiceInner(listInt, 0, 0)
-    return nbTwice
+    val nbTwice = frequencyTwiceInner(listInt, List[Int](), 0)
+    nbTwice
   }
 
 }
