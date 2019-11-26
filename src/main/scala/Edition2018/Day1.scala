@@ -5,18 +5,33 @@ import scala.io.Source
 object Day1 {
 
   def main(args: Array[String]): Unit = {
-    var somme = 0;
-
     val filename = "src/main/resources/Edition2018/Day1.txt";
 
-    for (ligne <- Source.fromFile(filename).getLines) {
-      val ligne_int = ligne.toInt;
-      somme = somme + ligne_int;
-      println(ligne_int);
+    val lineList = Source.fromFile(filename).getLines.toList
+    val lineListInt = lineList.map(_.toInt)
+
+    val resultSum = lineListInt.sum
+    val resultFrequencyTwice = frequencyTwice(lineListInt)
+
+    println(resultSum)
+    println("twice " + resultFrequencyTwice)
+  }
+
+  def frequencyTwice(listInt : List[Int]): Int ={
+
+    def frequencyTwiceInner (theList: List[Int], sum: Int, countTwice: Int): Int ={
+      if (theList.isEmpty) return countTwice
+      else {
+        val actual = sum + theList.head
+        println(actual)
+
+        if (actual == 394) frequencyTwiceInner(theList.tail, actual, countTwice + 1)
+        else frequencyTwiceInner(theList.tail, actual, countTwice)
+      }
     }
 
-    println("Le résultat est :");
-    println(somme);
+    val nbTwice = frequencyTwiceInner(listInt, 0, 0)
+    return nbTwice
   }
 
 }
