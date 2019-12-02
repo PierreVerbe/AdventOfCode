@@ -14,6 +14,10 @@ object Day1 {
 
     val filename = "src/main/resources/Edition2019/Day1.txt";
 
+    /*for (line <- Source.fromFile(filename).getLines) {
+     val lineInt = line
+   }*/
+
     val lineList = Source.fromFile(filename).getLines.toList
     val lineListInt = lineList.map(_.toInt)
 
