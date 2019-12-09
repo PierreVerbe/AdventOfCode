@@ -34,10 +34,10 @@ object Day6 {
       }
     }
 
-    def test(mapOrbits: Map[String, String]): Unit ={
+    /*def test(mapOrbits: Map[String, String]): Unit ={
       if(mapOrbit.filter(_._2.equals("B")).size == 1 )
 
-    }
+    }*/
 
     val filename = "src/main/resources/Edition2019/Day6_2.txt";
     val lineList = Source.fromFile(filename).getLines.toList
