@@ -1,183 +1,115 @@
 package Edition2019
 
-import scala.collection.immutable.HashMap
 import scala.io.Source
 
 object Day3 {
   def main(args: Array[String]): Unit = {
 
+    def closestIntersection(firstLine: String, secondLine: String): Int = {
+      var firstPos: Vector[(Int,Int)] = Vector()
+      var secondPos: Vector[(Int,Int)] = Vector()
+      var currentPos = (0,0)
+
+      for (instruction <- firstLine.split(',')) {
+        instruction.head match {
+          case 'R' => for(i <- 1 to instruction.tail.toInt) firstPos = firstPos :+ (currentPos._1 + i, currentPos._2)
+          case 'L' => for(i <- 1 to instruction.tail.toInt) firstPos = firstPos :+ (currentPos._1 - i, currentPos._2)
+          case 'U' => for(i <- 1 to instruction.tail.toInt) firstPos = firstPos :+ (currentPos._1, currentPos._2 + i)
+          case 'D' => for(i <- 1 to instruction.tail.toInt) firstPos = firstPos :+ (currentPos._1, currentPos._2 - i)
+          case _ => println("error")
+        }
+        currentPos = firstPos.last
+      }
+
+      currentPos = (0,0)
+      for (instruction <- secondLine.split(',')) {
+        instruction.head match {
+          case 'R' => for(i <- 1 to instruction.tail.toInt) secondPos = secondPos :+ (currentPos._1 + i, currentPos._2)
+          case 'L' => for(i <- 1 to instruction.tail.toInt) secondPos = secondPos :+ (currentPos._1 - i, currentPos._2)
+          case 'U' => for(i <- 1 to instruction.tail.toInt) secondPos = secondPos :+ (currentPos._1, currentPos._2 + i)
+          case 'D' => for(i <- 1 to instruction.tail.toInt) secondPos = secondPos :+ (currentPos._1 , currentPos._2- i)
+          case _ => println("error")
+        }
+        currentPos = secondPos.last
+      }
+
+      val intersectionsWires = firstPos.intersect(secondPos).sortBy(x => math.abs(x._1) + math.abs(x._2))
+      println("X = " + intersectionsWires(0)._1 + ", Y = " + intersectionsWires(0)._2)
+      math.abs(intersectionsWires(0)._1) + math.abs(intersectionsWires(0)._2)
+    }
+
+    def fewestSteps(firstLine: String, secondLine: String): Int = {
+      var firstPos: Vector[(Int,Int)] = Vector.empty
+      var firstStep: scala.collection.mutable.Map[(Int,Int), Int] = scala.collection.mutable.Map.empty
+      var secondPos: Vector[(Int,Int)] = Vector.empty
+      var secondStep: scala.collection.mutable.Map[(Int,Int), Int] = scala.collection.mutable.Map.empty
+      var currentPos = (0,0)
+      var steps = 0
+
+      for (instruction <- firstLine.split(',')) {
+        instruction.head match {
+          case 'R' => for(i <- 1 to instruction.tail.toInt) {
+            steps += 1
+            firstPos = firstPos :+ (currentPos._1 + i, currentPos._2)
+            if (!firstStep.contains(firstPos.last)) firstStep(firstPos.last) = steps
+          }
+          case 'L' => for(i <- 1 to instruction.tail.toInt) {
+            steps += 1
+            firstPos = firstPos :+ (currentPos._1 - i, currentPos._2)
+            if (!firstStep.contains(firstPos.last)) firstStep(firstPos.last) = steps
+          }
+          case 'U' => for(i <- 1 to instruction.tail.toInt) {
+            steps += 1
+            firstPos = firstPos :+ (currentPos._1, currentPos._2 + i)
+            if (!firstStep.contains(firstPos.last)) firstStep(firstPos.last) = steps
+          }
+          case 'D' => for(i <- 1 to instruction.tail.toInt) {
+            steps += 1
+            firstPos = firstPos :+ (currentPos._1, currentPos._2 - i)
+            if (!firstStep.contains(firstPos.last)) firstStep(firstPos.last) = steps
+          }
+          case _ => println("error")
+        }
+        currentPos = firstPos.last
+      }
+      currentPos = (0,0)
+      steps = 0
+
+      for (instruction <- secondLine.split(',')) {
+        instruction.head match {
+          case 'R' => for(i <- 1 to instruction.tail.toInt) {
+            steps += 1
+            secondPos = secondPos :+ (currentPos._1 + i, currentPos._2)
+            if (!secondStep.contains(secondPos.last)) secondStep(secondPos.last) = steps
+          }
+          case 'L' => for(i <- 1 to instruction.tail.toInt) {
+            steps += 1
+            secondPos = secondPos :+ (currentPos._1 - i, currentPos._2)
+            if (!secondStep.contains(secondPos.last)) secondStep(secondPos.last) = steps
+          }
+          case 'U' => for(i <- 1 to instruction.tail.toInt) {
+            steps += 1
+            secondPos = secondPos :+ (currentPos._1, currentPos._2 + i)
+            if (!secondStep.contains(secondPos.last)) secondStep(secondPos.last) = steps
+          }
+          case 'D' => for(i <- 1 to instruction.tail.toInt) {
+            steps += 1
+            secondPos = secondPos :+ (currentPos._1 , currentPos._2- i)
+            if (!secondStep.contains(secondPos.last)) secondStep(secondPos.last) = steps
+          }
+          case _ => println("error")
+        }
+        currentPos = secondPos.last
+      }
+      val intersectionsWires = firstPos.intersect(secondPos).map(x => firstStep(x) + secondStep(x)).sorted
+      intersectionsWires(0)
+    }
+
     val filename = "src/main/resources/Edition2019/Day3.txt";
-
     val lineList = Source.fromFile(filename).getLines.toList
-    val wire1 = lineList.head.split(",").toList
-    val wire2 = lineList(1).split(",").toList
 
-    println(wire1)
-    println(wire2)
-
-    def writeWire(thelist: List[String], theMap: HashMap[String, Char]): HashMap[String, Char] = {
-
-      def innerWriteWire(innerList: List[String], theInnerMap: HashMap[String, Char], x: Int, y: Int): (Int, Int, HashMap[String, Char]) = {
-        if (innerList.isEmpty) {
-          (x, y, theInnerMap)
-        }
-
-        else {
-          val elementList = innerList.head
-          val numberMove = elementList.substring(1).toInt
-
-          val fields = if (elementList.startsWith("R")) {
-            val innerNewMap = writeRight(theInnerMap, x, y, numberMove)
-            val newX = x + numberMove
-            val newY = y
-            (newX, newY, innerNewMap)
-          }
-
-          else if (elementList.startsWith("L")) {
-            val innerNewMap = writeLeft(theInnerMap, x, y, numberMove)
-            val newX = x - numberMove
-            val newY = y
-            (newX, newY, innerNewMap)
-          }
-
-          else if (elementList.startsWith("U")) {
-            val innerNewMap = writeUp(theInnerMap, x, y, numberMove)
-            val newX = x
-            val newY = y + numberMove
-            (newX, newY, innerNewMap)
-          }
-
-          else {
-            val innerNewMap = writeDown(theInnerMap, x, y, numberMove)
-            val newX = x
-            val newY = y - numberMove
-            (newX, newY, innerNewMap)
-          }
-
-          innerWriteWire(innerList.tail, fields._3, fields._1, fields._2)
-        }
-      }
-
-      val result = innerWriteWire(thelist, theMap, 0, 0)
-      result._3
-
-    }
-
-
-    def writeRight(theMap: HashMap[String, Char], x: Int, y: Int, nb: Int): HashMap[String, Char] = {
-      val newKey = x.toString + "," + y.toString
-
-      if (nb == 0) theMap
-
-      else if (nb == 1) {
-        val mapNew = if (theMap.contains(newKey)) theMap + (newKey -> 'X')
-        else theMap + (newKey -> '+')
-        writeRight(mapNew, x+1, y, nb-1)
-      }
-
-      else {
-        val mapNew = if (theMap.contains(newKey)) theMap + (newKey -> 'X')
-        else theMap + (newKey -> '-')
-        writeRight(mapNew, x+1, y, nb-1)
-      }
-    }
-
-    def writeLeft(theMap: HashMap[String, Char], x: Int, y: Int, nb: Int): HashMap[String, Char] ={
-      val newKey = x.toString + "," + y.toString
-
-      if (nb == 0) theMap
-
-      else if (nb == 1) {
-        val mapNew = if (theMap.contains(newKey)) theMap + (newKey -> 'X')
-        else theMap + (newKey -> '+')
-        writeLeft(mapNew, x-1, y, nb - 1)
-      }
-
-      else {
-        val mapNew = if (theMap.contains(newKey)) theMap + (newKey -> 'X')
-        else theMap + (newKey -> '-')
-        writeLeft(mapNew, x-1, y, nb - 1)
-      }
-    }
-
-    def writeUp(theMap: HashMap[String, Char], x: Int, y: Int, nb: Int): HashMap[String, Char] ={
-      val newKey = x.toString + "," + y.toString
-
-      if (nb == 0) theMap
-
-      else if (nb == 1) {
-        val mapNew = if (theMap.contains(newKey)) theMap + (newKey -> 'X')
-        else theMap + (newKey -> '+')
-        writeUp(mapNew, x, y + 1, nb - 1)
-      }
-
-      else {
-        val mapNew = if (theMap.contains(newKey)) theMap + (newKey -> 'X')
-        else theMap + (newKey -> '|')
-        writeUp(mapNew, x, y + 1, nb - 1)
-      }
-    }
-
-    def writeDown(theMap: HashMap[String, Char], x: Int, y: Int, nb: Int): HashMap[String, Char] = {
-      val newKey = x.toString + "," + y.toString
-
-      if (nb == 0) theMap
-
-      else if (nb == 1) {
-        val mapNew = if (theMap.contains(newKey)) theMap + (newKey -> 'X')
-        else theMap + (newKey -> '+')
-        writeDown(mapNew, x, y - 1, nb - 1)
-      }
-
-      else {
-        val mapNew = if (theMap.contains(newKey)) theMap + (newKey -> 'X')
-        else theMap + (newKey -> '|')
-        writeDown(mapNew, x, y - 1, nb - 1)
-      }
-    }
-
-    val myhashMap : HashMap[String, Char] = HashMap()
-    val result =  writeDown(myhashMap,5,5,10)
-    val result2 = writeRight(result,2,2,10)
-    val result3 = writeLeft(result2,8,4,10)
-    val result4 = writeUp(result3, 3,1, 10)
-
-    val mapWire1 = writeWire(wire1, myhashMap)
-    val mapWire1And2 = writeWire(wire2, mapWire1)
-    val mapWire1And2Without0 = mapWire1And2 - "0,0"
-    val mapWire1And2Filter = mapWire1And2Without0.filter( v => v._2 == 'X')
-    val mapWire1And2FilterDistanceMin = mapWire1And2Filter.keySet.toList.map(x => (x.split(",")))
-
-    //mapWire1And2Filter.filter( v => v._1.split(",").toList.map(_.toInt)(1) > 0)
-      //.minBy(_._1.split(",").toList.map(_.toInt).min)._1
-
-    val mapWire1And2FilterDistance : HashMap[String, Int] = mapWire1And2Filter.map{ case (key, value) => (key, key.split(",").toList.map(_.toInt.abs).sum)}
-    val mapWire1And2FilterDistanceMin2 = mapWire1And2Filter.map{ case (key, value) => (key, key.split(",").toList.map(_.toInt))}
-    println(mapWire1And2FilterDistanceMin)
-
-    mapWire1And2FilterDistance.foreach
-    {
-      case (key, value) => println (key + " -> " + value)
-    }
-
-    println(mapWire1And2FilterDistanceMin(0)(0).toInt)
-
-    var min = 67890
-    var autre = 234567
-
-    for( i <- 0 to mapWire1And2FilterDistanceMin.size - 1  ) {
-      if (min > mapWire1And2FilterDistanceMin(i)(1).toInt.abs){
-        min = mapWire1And2FilterDistanceMin(i)(1).toInt.abs
-        if (min == mapWire1And2FilterDistanceMin(i)(1).toInt.abs && autre > mapWire1And2FilterDistanceMin(i)(0).toInt.abs){
-          autre = mapWire1And2FilterDistanceMin(i)(0).toInt
-        }
-
-      }
-    }
-
-    println(min + ", " + autre)
-    //117
-
+    println("Part 1, result = " + closestIntersection(lineList(0), lineList(1)))
+    println("Part 2, result = " + fewestSteps(lineList(0), lineList(1)))
   }
 
 }

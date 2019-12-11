@@ -2,7 +2,7 @@ package Edition2019.IdeaBox
 
 import scala.io.Source
 
-object Day3Tab {
+object Day3v1 {
   def main(args: Array[String]): Unit = {
 
     val filename = "src/main/resources/Edition2019/Day3.txt";

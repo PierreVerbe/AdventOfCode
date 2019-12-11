@@ -26,10 +26,6 @@ object Day8 {
     innerFewest0Digits(theList, 0, 999, 999)
     }
 
-
-
-
-
     def render(theList: List[String], resultLayer: String): String = {
       def renderLayer(actualLayer: String, transformLayer: String, result: String): String = {
         def renderPixel(actualPixel: Char, transformPixel: Char): Char = {
@@ -64,7 +60,6 @@ object Day8 {
       println(resultPart2clean.toString.substring(100, 125))
       println(resultPart2clean.toString.substring(125, 150))
     }
-
 
     val filename = "src/main/resources/Edition2019/Day8.txt";
     val lineList = Source.fromFile(filename).getLines.toList.head.toString
