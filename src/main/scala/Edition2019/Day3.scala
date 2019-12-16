@@ -3,6 +3,7 @@ package Edition2019
 import scala.io.Source
 
 object Day3 {
+
   def main(args: Array[String]): Unit = {
 
     def closestIntersection(firstLine: String, secondLine: String): Int = {
@@ -111,5 +112,4 @@ object Day3 {
     println("Part 1, result = " + closestIntersection(lineList(0), lineList(1)))
     println("Part 2, result = " + fewestSteps(lineList(0), lineList(1)))
   }
-
 }

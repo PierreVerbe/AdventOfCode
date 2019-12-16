@@ -121,7 +121,6 @@ object Day5 {
     println(calculationGravity(listInt, 0, 1))
     println("Part 1, result = " + calculationGravity(listInt, 0, 1))
     //println("Part 2, result = " + calculationGravityPart2(listInt, 0, 0))
-
   }
 
 }
