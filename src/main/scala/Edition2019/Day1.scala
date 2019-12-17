@@ -12,7 +12,7 @@ object Day1 {
       else fuel + requiredFuel(preCalculation)
     }
 
-    val filename = "src/main/resources/Edition2019/Day1.txt";
+    val filename = "src/main/resources/Edition2019/Day1.txt"
 
     /*for (line <- Source.fromFile(filename).getLines) {
      val lineInt = line

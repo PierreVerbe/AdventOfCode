@@ -65,11 +65,14 @@ object Day16 {
     val resultPart1 = calculationPhase(lineVector).take(8).map(_.toString).mkString
     println("Part 1, result = " + resultPart1)
 
-    val lineVector10000 = Vector.fill(10000)(lineVector).flatten
+    //val test =
 
-    val beforeResultPart2 = calculationPhase(lineVector10000)
+    val lineVector10000 = Vector.fill(10000)(lineVector).flatten
     val offsetResultPart2 = lineVector.take(7).map(_.toString).mkString.toInt
-    val resultPart2 = beforeResultPart2.slice(offsetResultPart2, offsetResultPart2 + 8)
+    val interessantResultPart2 = lineVector10000.take(offsetResultPart2 + 8)
+    val beforeResultPart2 = calculationPhase(interessantResultPart2)
+
+    val resultPart2 = beforeResultPart2.drop(offsetResultPart2)
 
     println("Part 2, result = " + resultPart2)
   }
