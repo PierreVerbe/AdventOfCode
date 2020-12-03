@@ -14,6 +14,11 @@ object Day12 {
         moon4.printMoon
       }
 
+      def equalsGalaxy(anotherGalaxy: Galaxy): Boolean ={
+        if (moon1.equalsMoon(anotherGalaxy.moon1) && moon2.equalsMoon(anotherGalaxy.moon2) && moon3.equalsMoon(anotherGalaxy.moon3) && moon4.equalsMoon(anotherGalaxy.moon4)) true
+        else false
+      }
+
       def comparePosition(compare: Int, pos1: Int, pos2: Int, pos3: Int): Int ={
         val preResult1 = if (compare == pos1) 0 else if (compare > pos1) - 1 else 1
         val preResult2 = preResult1 + (if(compare == pos2) 0 else if (compare > pos2) -1 else 1)
@@ -70,12 +75,22 @@ object Day12 {
       def printMoon(): Unit = {
         println("pos=< x= " + moonPosition.pX + ", y= " + moonPosition.pY + ", z= " + moonPosition.pZ + " >, vel=< x= " + moonVelocity.vX + ", y= " + moonVelocity.vY + " ,z= " + moonVelocity.vZ + " >")
       }
+
+      def equalsMoon(anotherMoon: Moon): Boolean ={
+        if (moonPosition.equalsPosition(anotherMoon.moonPosition)) true
+        else false
+      }
     }
 
     class Position(val pX: Int, val pY: Int, val pZ: Int){
 
       def printPosition(): Unit={
         println("poc=< x= " + pX + ", y= " + pY + " ,z= " + pZ + " >")
+      }
+
+      def equalsPosition(anotherPosition: Position): Boolean ={
+        if (pX == anotherPosition.pX && pY == anotherPosition.pY && pZ == anotherPosition.pZ) true
+        else false
       }
 
     }
@@ -128,6 +143,7 @@ object Day12 {
       totalMoon1 + totalMoon2 + totalMoon3 + totalMoon4
     }
 
+
     val filename = "src/main/resources/Edition2019/Day12.txt"
     val lineList = Source.fromFile(filename).getLines.toList
 
@@ -143,21 +159,9 @@ object Day12 {
 
     val theGalaxy = new Galaxy(theMoon1, theMoon2, theMoon3, theMoon4)
 
-    val simulationGalaxy = simulation1000Steps(theGalaxy)
+    /* val simulationGalaxy = simulation1000Steps(theGalaxy)
     val resultPart1 = calculEnergy(simulationGalaxy)
-    println("Part 1, result = " + resultPart1)
-    //resultPart1.printGalaxy()
-
-
-
-    //
-    // val theGalaxy = new Galaxy()
-
-
-
-    //val theMoon = new Moon(new Position(-1, 0, 2), new Velocity(0, 0, 0))
-    //theMoon.printMoon()
+    println("Part 1, result = " + resultPart1) */
 
   }
-
 }

@@ -63,7 +63,7 @@ object Day5B extends App {
     println("Running part 1")
     println(part1())
     println("Running part 2")
-    //part2()
+    part2()
   }
 
   apply()
