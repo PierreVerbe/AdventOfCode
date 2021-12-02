@@ -1,4 +1,4 @@
-package Edition2021
+package com.github.adventOfCode.Edition2021
 
 import scala.io.Source
 

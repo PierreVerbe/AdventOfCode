@@ -1,4 +1,4 @@
-package Edition2019
+package com.github.adventOfCode.Edition2019
 
 object Day4 {
   def main(args: Array[String]): Unit = {

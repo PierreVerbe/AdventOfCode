@@ -1,4 +1,4 @@
-package Edition2020
+package com.github.adventOfCode.Edition2020
 
 object Day2 extends App{
   // Answer 1: 517

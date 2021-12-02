@@ -1,4 +1,4 @@
-package Edition2019.IdeaBox
+package com.github.adventOfCode.Edition2019.IdeaBox
 
 import scala.io.Source
 
