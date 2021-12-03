@@ -1,6 +1,6 @@
 package com.github.adventOfCode.Edition2021
 
-import scala.io.Source
+import com.github.adventOfCode.ToolAOC
 
 object Day1 {
   def enigma1(input: List[Int]): Int = {
@@ -20,18 +20,16 @@ object Day1 {
   }
 
   def main(args: Array[String]) {
-    val filename = "src/main/resources/Edition2021/Day1.txt"
-
-    val source = Source.fromFile(filename)
-    val lineList = source.getLines.toList.map(_.toInt)
-    source.close()
+    val toolAOC = new ToolAOC("src/main/resources/Edition2021/Day1.txt")
+    val input = toolAOC.getInputfile().map(_.toInt)
 
     // Enigma 1
-    val result1 = enigma1(lineList)
+    val result1 = enigma1(input)
     println(s"$result1")
 
     // Enigma 2
-    val result2 = enigma2(lineList)
+    val result2 = enigma2(input)
     println(s"$result2")
   }
+
 }
