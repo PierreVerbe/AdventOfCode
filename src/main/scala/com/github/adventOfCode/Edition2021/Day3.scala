@@ -26,18 +26,31 @@ object Day3 {
       else input.filter(item => item(nColumn) == 1).take(sumNList(nColumn))
     }
 
+    def filterListFromColumnNot(nColumn: Int, input: List[List[Int]]): List[List[Int]] = {
+      val length = input.length
+      val sumNList = input.transpose.map(_.sum)
+      val gammaRateBinary = sumNList.map(item => if (item < length-item) 1 else 0)
+
+      if (gammaRateBinary(nColumn) == 0) input.filter(item => item(nColumn) == 0).take(length-sumNList(nColumn))
+      else input.filter(item => item(nColumn) == 1).take(sumNList(nColumn))
+    }
+
     val listRange = List.range(0, input.head.length)
     val oxygenGeneratorRateBinary = listRange.foldLeft(input) {
-      (acc, num) => filterListFromColumn(num, acc, false)
+      (acc, num) => {
+        if (acc.length == 1) acc
+        else filterListFromColumn(num, acc)
+      }
     }
     val co2ScrubberRateBinary = listRange.foldLeft(input) {
-      (acc, num) => filterListFromColumn(num, acc, true)
+      (acc, num) => {
+        if (acc.length == 1) acc
+        else filterListFromColumnNot(num, acc)
+      }
     }
 
-    oxygenGeneratorRateBinary.foreach(println)
-
-    val oxygenGeneratorRate = Integer.parseInt(oxygenGeneratorRateBinary.mkString, 2)
-    val co2ScrubberRate = Integer.parseInt(co2ScrubberRateBinary.mkString, 2)
+    val oxygenGeneratorRate = Integer.parseInt(oxygenGeneratorRateBinary.head.mkString, 2)
+    val co2ScrubberRate = Integer.parseInt(co2ScrubberRateBinary.head.mkString, 2)
 
     oxygenGeneratorRate * co2ScrubberRate
   }
