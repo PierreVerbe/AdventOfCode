@@ -37,9 +37,8 @@ object Day5 {
   def enigma2(input: List[Direction]): Int = {
     val filteredInput = input.filter(item => item.position1.x == item.position2.x
       || item.position1.y == item.position2.y
-      || Math.abs(item.position1.x - item.position2.x) == Math.abs(item.position1.y - item.position2.y))
+      || Math.abs((item.position2.y - item.position1.y) / (item.position2.x - item.position1.x)) == 1)
 
-    println(filteredInput)
     val result = filteredInput.foldLeft(List[(Position, Int)]()) {
       (acc, num) => {
         val pos1x = num.position1.x
@@ -60,7 +59,14 @@ object Day5 {
         else {
           val listX = if(pos1x < pos2x) (pos1x to pos2x).toList else (pos2x to pos1x).toList
           val listY = if(pos1y < pos2y) (pos1y to pos2y).toList else (pos2y to pos1y).toList
-          val positions = listX.zip(listY).map(item => (Position(item._1, item._2), 1))
+
+          val positions =  (pos1x < pos2x, pos1y < pos2y) match {
+            case (false, false) => listX.zip(listY).map(item => (Position(item._1, item._2), 1))
+            case (false, true) => listX.reverse.zip(listY).map(item => (Position(item._1, item._2), 1))
+            case (true, false) => listX.reverse.zip(listY).map(item => (Position(item._1, item._2), 1))
+            case _ => listX.zip(listY).map(item => (Position(item._1, item._2), 1))
+          }
+
           acc ::: positions
         }
       }
