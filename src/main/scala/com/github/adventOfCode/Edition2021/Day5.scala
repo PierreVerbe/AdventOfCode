@@ -94,7 +94,7 @@ object Day5 {
 
     // Enigma 2
     val result2 = enigma2(input)
-    println(s"$result2") //18864
+    println(s"$result2")
   }
 
 }
