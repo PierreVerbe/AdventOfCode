@@ -35,8 +35,8 @@ object Day4 {
         if (acc._2.length == 1) acc
         else {
           val updatedBingoBoards = acc._2.map(board => board.map(line => line.map(number => if (num == number) true else number)))
-          val BingoBoard = updatedBingoBoards.filter(isBingoWin)
-          if (BingoBoard.nonEmpty) (num, BingoBoard) else (num, updatedBingoBoards)
+          val bingoBoard = updatedBingoBoards.filter(isBingoWin)
+          if (bingoBoard.nonEmpty) (num, bingoBoard) else (num, updatedBingoBoards)
         }
       }
     }
@@ -49,46 +49,25 @@ object Day4 {
     sumUnmarkedNumbers * result._1
   }
 
-  def enigma2(input: List[List[Int]]): Int = {
-    def filterListFromColumn(nColumn: Int, input: List[List[Int]]): List[List[Int]] = {
-      val length = input.length
-      val sumNList = input.transpose.map(_.sum)
-      val gammaRateBinary = sumNList.map(item => if (item < length-item) 0 else 1)
-
-      if (gammaRateBinary(nColumn) == 0) input.filter(item => item(nColumn) == 0).take(length-sumNList(nColumn))
-      else input.filter(item => item(nColumn) == 1).take(sumNList(nColumn))
-    }
-
-    def filterListFromColumnNot(nColumn: Int, input: List[List[Int]]): List[List[Int]] = {
-      val length = input.length
-      val sumNList = input.transpose.map(_.sum)
-      val gammaRateBinary = sumNList.map(item => if (item < length-item) 1 else 0)
-
-      if (gammaRateBinary(nColumn) == 0) input.filter(item => item(nColumn) == 0).take(length-sumNList(nColumn))
-      else input.filter(item => item(nColumn) == 1).take(sumNList(nColumn))
-    }
-
-    val listRange = List.range(0, input.head.length)
-    val oxygenGeneratorRateBinary = listRange.foldLeft(input) {
+  def enigma2(bingo: Bingo): Int = {
+    val result = bingo.randomNumbers.foldLeft((0, bingo.Boards)) {
       (acc, num) => {
-        if (acc.length == 1) acc
-        else filterListFromColumn(num, acc)
-      }
-    }
-    val co2ScrubberRateBinary = listRange.foldLeft(input) {
-      (acc, num) => {
-        if (acc.length == 1) acc
-        else filterListFromColumnNot(num, acc)
+        if (acc._2.length == 1 && isBingoWin(acc._2.head)) acc
+        else {
+          val updatedBingoBoards = acc._2.map(board => board.map(line => line.map(number => if (num == number) true else number)))
+          val remainingBingoBoards = updatedBingoBoards.filter(! isBingoWin(_))
+          if (remainingBingoBoards.nonEmpty) (num, remainingBingoBoards) else (num, updatedBingoBoards)
+        }
       }
     }
 
-    val oxygenGeneratorRate = Integer.parseInt(oxygenGeneratorRateBinary.head.mkString, 2)
-    val co2ScrubberRate = Integer.parseInt(co2ScrubberRateBinary.head.mkString, 2)
+    val sumUnmarkedNumbers = result._2.head.map(line =>
+      line.map(number =>
+        if (number == true) 0 else number.asInstanceOf[Int]
+      ).sum).sum
 
-    oxygenGeneratorRate * co2ScrubberRate
+    sumUnmarkedNumbers * result._1
   }
-
-
 
   def main(args: Array[String]) {
     val toolAOC = new ToolAOC("src/main/resources/Edition2021/Day4.txt")
