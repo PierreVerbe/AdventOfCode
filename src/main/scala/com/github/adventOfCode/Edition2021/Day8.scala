@@ -17,8 +17,8 @@ object Day8 {
 
   def enigma2(input: List[Display]): Int = {
     val listDecodedNumber = input.map( display => {
-      val patterns = display.signal1.map(pattern => (pattern, pattern.length))
-      val mapPatterns = patterns.flatMap(pattern => {
+      val listPatternLength = display.signal1.map(pattern => (pattern, pattern.length))
+      val mapEasyPattern = listPatternLength.flatMap(pattern => {
         pattern._2 match {
           case 2 => List((1, pattern._1 ))
           case 3 => List((7, pattern._1 ))
@@ -28,19 +28,17 @@ object Day8 {
         }
       }).toMap
 
-      //println(mapPatterns)
-      val mapPatternsLength6 = patterns.filter(_._2 == 6).map( pattern => {
+      val mapPatternsLength6 = listPatternLength.filter(_._2 == 6).map( pattern => {
         val splitedPattern = pattern._1.split("").toList
-        val isPattern0 = mapPatterns.getOrElse(1, "")
+        val isPattern0 = mapEasyPattern.getOrElse(1, "")
           .split("").toList
           .map(splitedPattern.contains(_))
           .reduce((x, y) => x && y)
-        val isPattern9 = mapPatterns.getOrElse(4, "")
+        val isPattern9 = mapEasyPattern.getOrElse(4, "")
           .split("").toList
           .map(splitedPattern.contains(_))
           .reduce((x, y) => x && y)
 
-        //println(s"$isPattern0 $isPattern9")
         (isPattern0, isPattern9) match {
           case (true, true) => (9, pattern._1)
           case (false, false) => (6, pattern._1)
@@ -48,26 +46,22 @@ object Day8 {
         }
       }).toMap
 
-      val merged = mapPatterns.toSeq ++ mapPatternsLength6.toSeq
-      val grouped = merged.groupBy(_._1)
-      val addedPatterns = grouped.mapValues(_.map(_._2).toList.head)
+      val seqPatternAppended = mapEasyPattern.toSeq ++ mapPatternsLength6.toSeq
+      val mapPatternCompletedGrouped = seqPatternAppended.groupBy(_._1)
+      val mapPatternCompleted = mapPatternCompletedGrouped.mapValues(_.map(_._2).toList.head)
 
-      val mapPatternsLength5 = patterns.filter(_._2 == 5).map( pattern => {
-        //println(pattern._1)
+      val mapPatternsLength5 = listPatternLength.filter(_._2 == 5).map( pattern => {
         val splitedPattern = pattern._1.split("").toList
-        val isPattern3 = mapPatterns.getOrElse(1, "")
+        val isPattern3 = mapEasyPattern.getOrElse(1, "")
           .split("").toList
           .map(splitedPattern.contains(_))
           .reduce((x, y) => x && y)
         val isPattern2 = {
-          val pattern8 = mapPatterns.getOrElse(8, "").split("").toList
-          val pattern9 = addedPatterns.getOrElse(9, "").split("").toList
+          val pattern8 = mapEasyPattern.getOrElse(8, "").split("").toList
+          val pattern9 = mapPatternCompleted.getOrElse(9, "").split("").toList
           val bottomLeft = pattern8.flatMap(item => if (pattern9.contains(item)) List() else List(item))
-
           splitedPattern.contains(bottomLeft.head)
         }
-
-        println(s"$isPattern2 $isPattern3")
 
         (isPattern2, isPattern3) match {
           case (false, true) => (3, pattern._1)
@@ -76,25 +70,16 @@ object Day8 {
         }
       }).toMap
 
-      println(mapPatternsLength5)
+      val seqPatternFinalMerged = mapPatternCompleted.toSeq ++ mapPatternsLength5.toSeq
+      val mapPatternFinalGrouped = seqPatternFinalMerged.groupBy(_._1)
+      val mapPatternFinal = mapPatternFinalGrouped.mapValues( value =>
+        value.map(_._2).head.split("").sorted.mkString
+      ).map(_.swap)
 
-      val finalMerged = addedPatterns.toSeq ++ mapPatternsLength5.toSeq
-      val finalGrouped = finalMerged.groupBy(_._1)
-
-      val finalMap = finalGrouped.mapValues(_.map(_._2).toList.head.split("").sorted.mkString).map(_.swap)
-      println(finalMap)
-
-      val decodedNumber = display.signal2.map(item => {
-        val sortedString = item.split("").toList.sorted.mkString
-        finalMap.getOrElse(sortedString, 0).toString
+      display.signal2.map(item => {
+        val sortedString = item.split("").sorted.mkString
+        mapPatternFinal.getOrElse(sortedString, 0).toString
       }).mkString.toInt
-
-
-
-     decodedNumber
-      //println(mapPatternsLength6)
-      //println(cleaned)
-
     })
 
     listDecodedNumber.sum
