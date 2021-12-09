@@ -6,8 +6,8 @@ object Day9 {
 
   case class Position(x: Int, y: Int)
 
-  def enigma1(input: Map[Position, Int]): Int = {
-    val lowestPoints = input.filter(point => {
+  def getLowestPoints(input: Map[Position, Int]): Map[Position, Int] = {
+    input.filter(point => {
       val leftPoint = input.getOrElse(Position(point._1.x + 1, point._1.y), 10)
       val rightPoint = input.getOrElse(Position(point._1.x - 1, point._1.y), 10)
       val upPoint = input.getOrElse(Position(point._1.x, point._1.y + 1), 10)
@@ -18,82 +18,47 @@ object Day9 {
         case _ => false
       }
     })
+  }
+
+  def enigma1(input: Map[Position, Int]): Int = {
+    val lowestPoints = getLowestPoints(input)
 
     lowestPoints.toList.map(_._2 + 1).sum
   }
 
-  /*
-  def enigma2(input: List[Display]): Int = {
-    val listDecodedNumber = input.map( display => {
-      val listPatternLength = display.signal1.map(pattern => (pattern, pattern.length))
-      val mapEasyPattern = listPatternLength.flatMap(pattern => {
-        pattern._2 match {
-          case 2 => List((1, pattern._1 ))
-          case 3 => List((7, pattern._1 ))
-          case 4 => List((4, pattern._1 ))
-          case 7 => List((8, pattern._1 ))
-          case _ => List()
-        }
-      }).toMap
+  def enigma2(input: Map[Position, Int]): Int = {
+    def recSearchBasin(position: Position, acc: List[Position]): List[Position] = {
+      val leftPoint = input.getOrElse(Position(position.x + 1, position.y), 10)
+      val rightPoint = input.getOrElse(Position(position.x - 1, position.y), 10)
+      val upPoint = input.getOrElse(Position(position.x, position.y + 1), 10)
+      val downPoint = input.getOrElse(Position(position.x, position.y - 1), 10)
 
-      val mapPatternsLength6 = listPatternLength.filter(_._2 == 6).map( pattern => {
-        val splitedPattern = pattern._1.split("").toList
-        val isPattern0 = mapEasyPattern.getOrElse(1, "")
-          .split("").toList
-          .map(splitedPattern.contains(_))
-          .reduce((x, y) => x && y)
-        val isPattern9 = mapEasyPattern.getOrElse(4, "")
-          .split("").toList
-          .map(splitedPattern.contains(_))
-          .reduce((x, y) => x && y)
+      val isSearchLeft = ! acc.contains(Position(position.x + 1, position.y)) && leftPoint != 9 && leftPoint != 10
+      val listLeftPoint = if (isSearchLeft) recSearchBasin(Position(position.x + 1, position.y), acc :+ Position(position.x + 1, position.y)) else acc
 
-        (isPattern0, isPattern9) match {
-          case (true, true) => (9, pattern._1)
-          case (false, false) => (6, pattern._1)
-          case _ => (0, pattern._1)
-        }
-      }).toMap
+      val isSearchRight = ! listLeftPoint.contains(Position(position.x - 1, position.y)) && rightPoint != 9 && rightPoint != 10
+      val listRightPoint = if (isSearchRight) recSearchBasin(Position(position.x - 1, position.y), listLeftPoint :+ Position(position.x - 1, position.y)) else listLeftPoint
 
-      val seqPatternAppended = mapEasyPattern.toSeq ++ mapPatternsLength6.toSeq
-      val mapPatternCompletedGrouped = seqPatternAppended.groupBy(_._1)
-      val mapPatternCompleted = mapPatternCompletedGrouped.mapValues(_.map(_._2).toList.head)
+      val isSearchUp = ! listRightPoint.contains(Position(position.x, position.y + 1)) && upPoint != 9 && upPoint != 10
+      val listUpPoint = if (isSearchUp) recSearchBasin(Position(position.x, position.y + 1), listRightPoint :+ Position(position.x, position.y + 1)) else listRightPoint
 
-      val mapPatternsLength5 = listPatternLength.filter(_._2 == 5).map( pattern => {
-        val splitedPattern = pattern._1.split("").toList
-        val isPattern3 = mapEasyPattern.getOrElse(1, "")
-          .split("").toList
-          .map(splitedPattern.contains(_))
-          .reduce((x, y) => x && y)
-        val isPattern2 = {
-          val pattern8 = mapEasyPattern.getOrElse(8, "").split("").toList
-          val pattern9 = mapPatternCompleted.getOrElse(9, "").split("").toList
-          val bottomLeft = pattern8.flatMap(item => if (pattern9.contains(item)) List() else List(item))
-          splitedPattern.contains(bottomLeft.head)
-        }
+      val isSearchDown = ! listUpPoint.contains(Position(position.x, position.y - 1)) && downPoint != 9 && downPoint != 10
+      val listDownPoint = if (isSearchDown) recSearchBasin(Position(position.x, position.y - 1), listUpPoint :+ Position(position.x, position.y - 1)) else listUpPoint
 
-        (isPattern2, isPattern3) match {
-          case (false, true) => (3, pattern._1)
-          case (true, false) => (2, pattern._1)
-          case _ => (5, pattern._1)
-        }
-      }).toMap
+      listDownPoint
+    }
 
-      val seqPatternFinalMerged = mapPatternCompleted.toSeq ++ mapPatternsLength5.toSeq
-      val mapPatternFinalGrouped = seqPatternFinalMerged.groupBy(_._1)
-      val mapPatternFinal = mapPatternFinalGrouped.mapValues( value =>
-        value.map(_._2).head.split("").sorted.mkString
-      ).map(_.swap)
+    val lowestPoints = getLowestPoints(input).toList
+    val listBasinLength = lowestPoints.map(lowestPoint => {
+      val basinMixed = recSearchBasin(lowestPoint._1, List())
+      val basin = basinMixed.distinct
 
-      display.signal2.map(item => {
-        val sortedString = item.split("").sorted.mkString
-        mapPatternFinal.getOrElse(sortedString, 0).toString
-      }).mkString.toInt
+      basin.length
     })
 
-    listDecodedNumber.sum
+    val top3Basin = listBasinLength.sorted.reverse.take(3)
+    top3Basin.product
   }
-
-   */
 
   def parseLine(line: (String, Int)): List[(Position, Int)] = {
     val listItems = line._1.split("").toList.map(_.toInt)
@@ -114,8 +79,8 @@ object Day9 {
     println(s"$result1")
 
     // Enigma 2
-    //val result2 = enigma2(input)
-    //println(s"$result2")
+    val result2 = enigma2(input)
+    println(s"$result2")
   }
 
 }
