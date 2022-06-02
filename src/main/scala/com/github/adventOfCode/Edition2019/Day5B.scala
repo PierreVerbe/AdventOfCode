@@ -1,4 +1,4 @@
-package Edition2019
+package com.github.adventOfCode.Edition2019
 
 object Day5B extends App {
 

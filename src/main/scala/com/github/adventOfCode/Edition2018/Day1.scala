@@ -1,4 +1,4 @@
-package Edition2018
+package com.github.adventOfCode.Edition2018
 
 import scala.io.Source
 
